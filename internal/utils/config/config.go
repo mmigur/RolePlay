@@ -13,6 +13,8 @@ type Config struct {
 	DbHost     string
 	DbPort     string
 	ServerPort string
+	SecretKey  string
+	NgrokUrl   string
 }
 
 func NewConfig() *Config {
@@ -31,4 +33,6 @@ func (cfg *Config) InitENV() {
 	cfg.ServerPort = os.Getenv("SERVER_PORT")
 	cfg.DbHost = os.Getenv("DB_HOST")
 	cfg.DbPort = os.Getenv("DB_PORT")
+	cfg.SecretKey = os.Getenv("SECRET_KEY")
+	cfg.NgrokUrl = os.Getenv("NGROK_URL")
 }

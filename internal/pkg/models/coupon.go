@@ -1,18 +1,17 @@
 package models
 
-type DiscountType int
+type DiscountType float32
 
 const (
-	OneThousand    DiscountType = 3
-	ThreeThousands DiscountType = 10
-	Registration   DiscountType = 5
+	OneThousand    DiscountType = 0.03
+	ThreeThousands DiscountType = 0.1
+	Registration   DiscountType = 0.05
 )
 
 type Coupon struct {
 	Id           uint `gorm:"primaryKey"`
 	Name         string
 	Description  string
-	DiscountType DiscountType `gorm:"type:discount_type"`
-	Cost         int
+	DiscountType DiscountType
 	CreatedAt    string
 }

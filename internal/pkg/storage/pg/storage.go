@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"RolePlayModule/internal/pkg/models"
 	"RolePlayModule/internal/utils/config"
 	"fmt"
 	"gorm.io/driver/postgres"
@@ -31,6 +32,28 @@ func NewPostgresDB(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = createDataType(db, "product_category_type", []string{string(models.MeatCategory), string(models.VegetablesCategory), string(models.MilkCategory), string(models.FishCategory), string(models.GroatsCategory), string(models.NutsCategory)})
+	if err != nil {
+		fmt.Println("news_category_type is already exist")
+	}
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		fmt.Println("table 'users' is already exist")
+	}
+	err = db.AutoMigrate(&models.Coupon{})
+	if err != nil {
+		fmt.Println("table 'coupons' is already exist")
+	}
+	err = db.AutoMigrate(&models.Product{})
+	if err != nil {
+		fmt.Println("table 'products' is already exist")
+	}
+	err = db.AutoMigrate(&models.OrderRecord{})
+	if err != nil {
+		fmt.Println("table 'order_records' is already exist")
+	}
+
 	return db, nil
 }
 

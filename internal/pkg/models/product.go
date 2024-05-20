@@ -1,17 +1,22 @@
 package models
 
-type ProductType string
+type ProductCategory string
 
 const (
-	Meat ProductType = "meat"
+	MeatCategory       ProductCategory = "meat"
+	VegetablesCategory ProductCategory = "vegetables"
+	MilkCategory       ProductCategory = "milk"
+	FishCategory       ProductCategory = "fish"
+	GroatsCategory     ProductCategory = "groats"
+	NutsCategory       ProductCategory = "nuts"
 )
 
 type Product struct {
 	Id          uint32 `gorm:"primaryKey"`
 	Name        string
 	Description string
-	Category    string
+	Category    ProductCategory `gorm:"type:product_category_type"`
 	Count       int
-	Price       uint32
+	Price       float32
 	CreatedAt   string
 }

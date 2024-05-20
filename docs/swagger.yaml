@@ -1,0 +1,44 @@
+basePath: /
+definitions:
+  controllers.CheckUserRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.CheckUserResponse:
+    properties:
+      errorMessage:
+        type: string
+      isRegistered:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: API server for 52FOOD
+  title: 52FOOD API
+  version: "1.0"
+paths:
+  /auth/check-user:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет существование пользователя и в случае его отсутсвия,
+        отправляет код на email
+      parameters:
+      - description: Запрос на проверку пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.CheckUserResponse'
+      summary: Проверка на зарегистрирован ли пользователь
+      tags:
+      - Auth
+swagger: "2.0"
