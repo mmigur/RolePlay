@@ -11,7 +11,6 @@ import (
 //	@title			52FOOD API
 //	@version		1.0
 //	@description	API server for 52FOOD
-//@host
 //	@BasePath		/
 
 func main() {

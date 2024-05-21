@@ -1,9 +1,8 @@
 package models
 
-import "gorm.io/gorm"
-
 type CodeForEmail struct {
-	gorm.Model
-	Email string
-	Code  string
+	Id        uint `gorm:"primaryKey"`
+	Email     string
+	Code      string
+	CreatedAt string
 }

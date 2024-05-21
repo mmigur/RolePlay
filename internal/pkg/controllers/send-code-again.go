@@ -10,7 +10,7 @@ type SendCodeAgainRequest struct {
 }
 
 type SendCodeAgainResponse struct {
-	Success      bool   `json:"success,omitempty"`
+	Success      bool   `json:"success"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
@@ -20,6 +20,10 @@ func (s *Server) SendCodeAgain(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, SendCodeAgainResponse{ErrorMessage: err.Error()})
 		return
 	}
-
+	err := s.storage.SendCodeAgain(request.Email, *s.cfg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, SendCodeAgainResponse{ErrorMessage: err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, SendCodeAgainResponse{Success: true})
 }

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"RolePlayModule/internal/pkg/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,7 +11,7 @@ type CheckUserRequest struct {
 }
 
 type CheckUserResponse struct {
-	IsRegistered bool   `json:"isRegistered,omitempty"`
+	IsRegistered bool   `json:"isRegistered"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
@@ -31,12 +31,19 @@ func (s *Server) CheckUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CheckUserResponse{ErrorMessage: err.Error()})
 		return
 	}
-
-	isReg, err := s.storage.CheckUser(request.Email, *s.cfg)
-	fmt.Println(isReg)
+	isValid := services.ValidEmail(request.Email)
+	if !isValid {
+		c.JSON(http.StatusBadRequest, CheckUserResponse{ErrorMessage: "invalid email"})
+		return
+	}
+	result, err := s.storage.CheckUser(request.Email, *s.cfg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, CheckUserResponse{ErrorMessage: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, CheckUserResponse{IsRegistered: isReg})
+	if result {
+		c.JSON(http.StatusOK, CheckUserResponse{IsRegistered: true})
+		return
+	}
+	c.JSON(http.StatusOK, CheckUserResponse{IsRegistered: false})
 }

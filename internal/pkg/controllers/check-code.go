@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"RolePlayModule/internal/pkg/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,7 +12,7 @@ type CheckCodeRequest struct {
 }
 
 type CheckCodeResponse struct {
-	IsCorrect    bool   `json:"isCorrect,omitempty"`
+	IsCorrect    bool   `json:"isCorrect"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
@@ -21,8 +22,17 @@ func (s *Server) CheckCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CheckCodeResponse{ErrorMessage: err.Error()})
 		return
 	}
+	isValid := services.ValidEmail(request.Email)
+	if !isValid {
+		c.JSON(http.StatusBadRequest, CheckCodeResponse{ErrorMessage: "invalid email"})
+		return
+	}
 
-	result := true
+	result, err := s.storage.CheckCode(request.Email, request.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, CheckCodeResponse{ErrorMessage: err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, CheckCodeResponse{IsCorrect: result})
 }
