@@ -140,6 +140,7 @@ func (s *Storage) CheckCode(email, code string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	var newUser models.User
 	newUser.Email = email
 	err = s.db.Create(&newUser).Error
@@ -149,11 +150,11 @@ func (s *Storage) CheckCode(email, code string) (bool, error) {
 	return true, nil
 }
 
-func (s *Storage) FillProfile(user models.User) error {
+func (s *Storage) FillProfile(user models.User, cfg config.Config) (string, error) {
 	var foundUser models.User
 	err := s.db.Where("email = ?", user.Email).First(&foundUser).Error
 	if err != nil {
-		return err
+		return "", err
 	}
 	foundUser.FirstName = user.FirstName
 	foundUser.MiddleName = user.MiddleName
@@ -163,9 +164,14 @@ func (s *Storage) FillProfile(user models.User) error {
 	foundUser.Password = user.Password
 	err = s.db.Save(&foundUser).Error
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+
+	token, err := services.GenerateUserToken([]byte(cfg.SecretKey), foundUser)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (s *Storage) SendCodeAgain(email string, cfg config.Config) error {
@@ -220,6 +226,19 @@ func (s *Storage) GetProductsByCategory(categoryID uint) ([]models.Product, erro
 		return nil, err
 	}
 	return products, nil
+}
+
+func (s *Storage) CheckPassword(email, password string, cfg config.Config) (string, error) {
+	var foundUser models.User
+	err := s.db.Where("email = ? AND password = ?", email, password).First(&foundUser).Error
+	if err != nil {
+		return "", err
+	}
+	token, err := services.GenerateUserToken([]byte(cfg.SecretKey), foundUser)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (s *Storage) CreateCategory(name string) error {

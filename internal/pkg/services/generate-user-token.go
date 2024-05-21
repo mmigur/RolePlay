@@ -6,7 +6,7 @@ import (
 )
 
 type UserClaims struct {
-	ID       uint   `json:"id"`
+	UserId   uint   `json:"id"`
 	Email    string `json:"email"`
 	Username string `json:"nickname"`
 	jwt.StandardClaims
@@ -14,7 +14,7 @@ type UserClaims struct {
 
 func GenerateUserToken(secret []byte, user models.User) (string, error) {
 	claims := UserClaims{
-		ID:       user.ID,
+		UserId:   user.ID,
 		Email:    user.Email,
 		Username: user.Username,
 	}

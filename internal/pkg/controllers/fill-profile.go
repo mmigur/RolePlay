@@ -18,6 +18,7 @@ type FillProfileRequest struct {
 
 type FillProfileResponse struct {
 	Success      bool   `json:"success"`
+	Token        string `json:"token,omitempty"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
@@ -36,10 +37,10 @@ func (s *Server) FillProfile(c *gin.Context) {
 	user.Address = request.Address
 	user.Username = request.Username
 	user.Password = request.Password
-	err := s.storage.FillProfile(user)
+	token, err := s.storage.FillProfile(user, *s.cfg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, FillProfileResponse{Success: false, ErrorMessage: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, FillProfileResponse{Success: true})
+	c.JSON(http.StatusOK, FillProfileResponse{Success: true, Token: token})
 }
