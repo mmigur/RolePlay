@@ -7,14 +7,16 @@ import (
 )
 
 type Config struct {
-	DbName     string
-	DbUser     string
-	DbPassword string
-	DbHost     string
-	DbPort     string
-	ServerPort string
-	SecretKey  string
-	NgrokUrl   string
+	DbName           string
+	DbUser           string
+	DbPassword       string
+	DbHost           string
+	DbPort           string
+	ServerPort       string
+	SecretKey        string
+	NgrokUrl         string
+	AppEmail         string
+	AppEmailPassword string
 }
 
 func NewConfig() *Config {
@@ -35,4 +37,7 @@ func (cfg *Config) InitENV() {
 	cfg.DbPort = os.Getenv("DB_PORT")
 	cfg.SecretKey = os.Getenv("SECRET_KEY")
 	cfg.NgrokUrl = os.Getenv("NGROK_URL")
+	cfg.AppEmail = os.Getenv("APP_EMAIL")
+	cfg.AppEmailPassword = os.Getenv("APP_EMAIL_PASSWORD")
+
 }

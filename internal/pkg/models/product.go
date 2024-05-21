@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type ProductCategory string
 
 const (
@@ -12,11 +14,15 @@ const (
 )
 
 type Product struct {
-	Id          uint32 `gorm:"primaryKey"`
-	Name        string
-	Description string
-	Category    ProductCategory `gorm:"type:product_category_type"`
-	Count       int
-	Price       float32
-	CreatedAt   string
+	gorm.Model
+	Name              string
+	Description       string
+	Category          ProductCategory `gorm:"type:product_category_type"`
+	IsInStock         bool
+	Price             float32
+	Weight            float32
+	ShelfLife         string
+	StorageConditions string
+	Brand             string
+	Country           string
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,6 +31,12 @@ func (s *Server) CheckUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CheckUserResponse{ErrorMessage: err.Error()})
 		return
 	}
-	//result := true
-	c.JSON(http.StatusOK, CheckUserResponse{IsRegistered: true})
+
+	isReg, err := s.storage.CheckUser(request.Email, *s.cfg)
+	fmt.Println(isReg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, CheckUserResponse{ErrorMessage: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, CheckUserResponse{IsRegistered: isReg})
 }

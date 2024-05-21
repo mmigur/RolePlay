@@ -2,7 +2,9 @@ package pg
 
 import (
 	"RolePlayModule/internal/pkg/models"
+	"RolePlayModule/internal/pkg/services"
 	"RolePlayModule/internal/utils/config"
+	"errors"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -37,21 +39,10 @@ func NewPostgresDB(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		fmt.Println("news_category_type is already exist")
 	}
-	err = db.AutoMigrate(&models.User{})
+
+	err = db.AutoMigrate(&models.User{}, &models.Product{}, &models.Coupon{}, &models.Order{}, &models.OrderDetail{}, &models.UserCoupon{}, &models.CodeForEmail{})
 	if err != nil {
-		fmt.Println("table 'users' is already exist")
-	}
-	err = db.AutoMigrate(&models.Coupon{})
-	if err != nil {
-		fmt.Println("table 'coupons' is already exist")
-	}
-	err = db.AutoMigrate(&models.Product{})
-	if err != nil {
-		fmt.Println("table 'products' is already exist")
-	}
-	err = db.AutoMigrate(&models.OrderRecord{})
-	if err != nil {
-		fmt.Println("table 'order_records' is already exist")
+		return nil, err
 	}
 
 	return db, nil
@@ -79,4 +70,43 @@ func createDataType(db *gorm.DB, dataType string, values []string) error {
 	}
 	fmt.Printf("Data type %s created successfully\n", dataType)
 	return nil
+}
+
+func (s *Storage) CheckUser(email string, cfg config.Config) (bool, error) {
+	var foundUser models.User
+	err := s.db.Where("email = ?", email).First(&foundUser).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			code := services.GenerateRandomCode()
+			var codeForEmail = models.CodeForEmail{
+				Email: email,
+				Code:  code,
+			}
+
+			err = s.db.Create(&codeForEmail).Error
+			if err != nil {
+				s.db.Delete(&codeForEmail)
+				return false, err
+			}
+			//err = services.SendCodeToEmailService(cfg, code, email)
+			//if err != nil {
+			//	return false, err
+			//}
+
+			return false, nil
+		}
+		return false, err
+	}
+	code := services.GenerateRandomCode()
+
+	codeForEmail := models.CodeForEmail{
+		Email: email,
+		Code:  code,
+	}
+	err = services.SendCodeToEmailService(cfg, code, email)
+	if err != nil {
+		return false, err
+	}
+	err = s.db.Create(&codeForEmail).Error
+	return true, nil
 }
