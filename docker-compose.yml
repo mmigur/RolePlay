@@ -5,12 +5,20 @@ services:
     image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - .env
     ports:
       - "8888:5432"
+
+  server:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    command: ["./main"]
 
 volumes:
   postgres_data:
