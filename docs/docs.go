@@ -327,6 +327,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/product/id": {
+            "get": {
+                "description": "Возвращает информацию о продукте по идентификатору",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Получить информацию о продукте по идентификатору",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор продукта",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetProductByIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetProductByIdResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetProductByIdResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/send-code-again": {
             "post": {
                 "description": "Отправляет код подтверждения повторно на указанный email.",
@@ -489,6 +533,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -565,6 +612,50 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Category"
                     }
+                }
+            }
+        },
+        "controllers.GetProductByIdResponse": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oldPrice": {
+                    "type": "number"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "shelfLife": {
+                    "type": "string"
+                },
+                "storageConditions": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "number"
                 }
             }
         },

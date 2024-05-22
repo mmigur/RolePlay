@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"RolePlayModule/internal/pkg/models"
+	"RolePlayModule/internal/pkg/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,6 +16,7 @@ type CreateProductRequest struct {
 	ShelfLife         string  `json:"shelfLife"`
 	StorageConditions string  `json:"storageConditions"`
 	Brand             string  `json:"brand"`
+	Image             string  `json:"image,omitempty"`
 	Country           string  `json:"country"`
 }
 
@@ -40,17 +42,24 @@ func (s *Server) CreateProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, CreateProductResponse{ErrorMessage: err.Error()})
 		return
 	}
-	var newProduct = models.Product{
-		Name:              request.Name,
-		Description:       request.Description,
-		CategoryId:        request.CategoryId,
-		Price:             request.Price,
-		Weight:            request.Weight,
-		ShelfLife:         request.ShelfLife,
-		StorageConditions: request.StorageConditions,
-		Brand:             request.Brand,
-		Country:           request.Country,
+
+	var imageLink string
+	if request.Image != "" {
+		imageLink, _ = services.SaveImage(*s.cfg, request.Image)
 	}
+
+	var newProduct models.Product
+	newProduct.Name = request.Name
+	newProduct.Description = request.Description
+	newProduct.CategoryId = request.CategoryId
+	newProduct.Price = request.Price
+	newProduct.Weight = request.Weight
+	newProduct.ShelfLife = request.ShelfLife
+	newProduct.StorageConditions = request.StorageConditions
+	newProduct.Brand = request.Brand
+	newProduct.ImageUrl = imageLink
+	newProduct.Country = request.Country
+
 	err := s.storage.CreateProduct(newProduct)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, CreateProductResponse{ErrorMessage: err.Error()})

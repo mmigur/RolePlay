@@ -250,3 +250,13 @@ func (s *Storage) CreateCategory(name string) error {
 	}
 	return nil
 }
+
+func (s *Storage) GetProductById(productId uint) (models.Product, error) {
+	var foundProduct models.Product
+	err := s.db.Where("id = ?", productId).First(&foundProduct).Error
+	if err != nil {
+		return models.Product{}, err
+	}
+
+	return foundProduct, nil
+}
