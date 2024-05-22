@@ -50,7 +50,7 @@ func (s *Server) initRoutes() {
 	product := s.router.Group("/product")
 	{
 		product.POST("", s.CreateProduct)
-		product.GET("/by-id", s.GetProductsById)
+		product.GET("/by-id", s.GetProductById)
 		product.GET("", s.GetProducts)
 		product.PUT("", s.UpdateProduct)    //TODO ДОКРУТИТЬ
 		product.DELETE("", s.DeleteProduct) //TODO ДОКРУТИТЬ
