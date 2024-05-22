@@ -22,6 +22,17 @@ type FillProfileResponse struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// FillProfile godoc
+// @Summary Заполнение профиля пользователя
+// @Description Заполняет профиль пользователя данными из запроса.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body FillProfileRequest true "Тело запроса, содержащее данные пользователя"
+// @Success 200 {object} FillProfileResponse "Успешный ответ с токеном"
+// @Failure 400 {object} FillProfileResponse "Неверный запрос"
+// @Failure 500 {object} FillProfileResponse "Внутренняя ошибка сервера"
+// @Router /fill-profile [post]
 func (s *Server) FillProfile(c *gin.Context) {
 	var request FillProfileRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

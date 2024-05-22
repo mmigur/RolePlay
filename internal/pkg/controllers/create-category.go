@@ -14,6 +14,17 @@ type CreateCategoryResponse struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// CreateCategory godoc
+// @Summary Создание категории
+// @Description Создает новую категорию с указанным именем.
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param request body CreateCategoryRequest true "Тело запроса, содержащее имя категории"
+// @Success 200 {object} CreateCategoryResponse "Успешный ответ"
+// @Failure 400 {object} CreateCategoryResponse "Неверный запрос"
+// @Failure 500 {object} CreateCategoryResponse "Внутренняя ошибка сервера"
+// @Router /category [post]
 func (s *Server) CreateCategory(c *gin.Context) {
 	var request CreateCategoryRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

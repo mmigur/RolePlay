@@ -1,5 +1,44 @@
 basePath: /
 definitions:
+  controllers.Category:
+    properties:
+      name:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/models.ShortProduct'
+        type: array
+    type: object
+  controllers.CheckCodeRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    type: object
+  controllers.CheckCodeResponse:
+    properties:
+      errorMessage:
+        type: string
+      isCorrect:
+        type: boolean
+    type: object
+  controllers.CheckPasswordRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.CheckPasswordResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
   controllers.CheckUserRequest:
     properties:
       email:
@@ -12,12 +51,156 @@ definitions:
       isRegistered:
         type: boolean
     type: object
+  controllers.CreateCategoryRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  controllers.CreateCategoryResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.CreateProductRequest:
+    properties:
+      brand:
+        type: string
+      category:
+        type: integer
+      country:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      shelfLife:
+        type: string
+      storageConditions:
+        type: string
+      weight:
+        type: number
+    type: object
+  controllers.CreateProductResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.FillProfileRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  controllers.FillProfileResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  controllers.GetCategoriesResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+    type: object
+  controllers.GetProductsResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/controllers.Category'
+        type: array
+      errorMessage:
+        type: string
+    type: object
+  controllers.SendCodeAgainRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  controllers.SendCodeAgainResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.ShortProduct:
+    properties:
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      name:
+        type: string
+      oldPrice:
+        type: number
+      price:
+        type: number
+    type: object
 info:
   contact: {}
   description: API server for 52FOOD
   title: 52FOOD API
   version: "1.0"
 paths:
+  /auth/check-password:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет пароль у пользователя с указанным email
+      parameters:
+      - description: Запрос на проверку пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.CheckPasswordResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.CheckPasswordResponse'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.CheckPasswordResponse'
+      summary: Проверка пароля пользователя
+      tags:
+      - Auth
   /auth/check-user:
     post:
       consumes:
@@ -39,6 +222,189 @@ paths:
           schema:
             $ref: '#/definitions/controllers.CheckUserResponse'
       summary: Проверка на зарегистрирован ли пользователь
+      tags:
+      - Auth
+  /category:
+    get:
+      description: Возвращает список всех категорий.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с списком категорий
+          schema:
+            $ref: '#/definitions/controllers.GetCategoriesResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получение списка категорий
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Создает новую категорию с указанным именем.
+      parameters:
+      - description: Тело запроса, содержащее имя категории
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/controllers.CreateCategoryResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.CreateCategoryResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.CreateCategoryResponse'
+      summary: Создание категории
+      tags:
+      - Category
+  /check-code:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет, является ли предоставленный код подтверждения верным
+        для указанного email.
+      parameters:
+      - description: Тело запроса, содержащее email и код
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Результат проверки
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "400":
+          description: Неверный запрос или email
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+      summary: Проверка кода подтверждения
+      tags:
+      - Auth
+  /fill-profile:
+    post:
+      consumes:
+      - application/json
+      description: Заполняет профиль пользователя данными из запроса.
+      parameters:
+      - description: Тело запроса, содержащее данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.FillProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с токеном
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+      summary: Заполнение профиля пользователя
+      tags:
+      - Auth
+  /product:
+    get:
+      description: Возвращает список всех продуктов, сгруппированных по категориям.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с списком продуктов по категориям
+          schema:
+            $ref: '#/definitions/controllers.GetProductsResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.GetProductsResponse'
+      summary: Получение списка продуктов по категориям
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Создает новый продукт с указанными параметрами.
+      parameters:
+      - description: Тело запроса, содержащее параметры продукта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/controllers.CreateProductResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.CreateProductResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.CreateProductResponse'
+      summary: Создание нового продукта
+      tags:
+      - Product
+  /send-code-again:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код подтверждения повторно на указанный email.
+      parameters:
+      - description: Тело запроса, содержащее email
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendCodeAgainRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+      summary: Отправка кода подтверждения повторно
       tags:
       - Auth
 swagger: "2.0"

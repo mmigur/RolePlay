@@ -14,6 +14,17 @@ type SendCodeAgainResponse struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// SendCodeAgain godoc
+// @Summary Отправка кода подтверждения повторно
+// @Description Отправляет код подтверждения повторно на указанный email.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body SendCodeAgainRequest true "Тело запроса, содержащее email"
+// @Success 200 {object} SendCodeAgainResponse "Успешный ответ"
+// @Failure 400 {object} SendCodeAgainResponse "Неверный запрос"
+// @Failure 500 {object} SendCodeAgainResponse "Внутренняя ошибка сервера"
+// @Router /send-code-again [post]
 func (s *Server) SendCodeAgain(c *gin.Context) {
 	var request SendCodeAgainRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

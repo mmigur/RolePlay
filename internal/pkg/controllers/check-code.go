@@ -16,6 +16,17 @@ type CheckCodeResponse struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// CheckCode godoc
+// @Summary Проверка кода подтверждения
+// @Description Проверяет, является ли предоставленный код подтверждения верным для указанного email.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body CheckCodeRequest true "Тело запроса, содержащее email и код"
+// @Success 200 {object} CheckCodeResponse "Результат проверки"
+// @Failure 400 {object} CheckCodeResponse "Неверный запрос или email"
+// @Failure 500 {object} CheckCodeResponse "Внутренняя ошибка сервера"
+// @Router /check-code [post]
 func (s *Server) CheckCode(c *gin.Context) {
 	var request CheckCodeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

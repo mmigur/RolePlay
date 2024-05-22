@@ -23,6 +23,17 @@ type CreateProductResponse struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// CreateProduct godoc
+// @Summary Создание нового продукта
+// @Description Создает новый продукт с указанными параметрами.
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param request body CreateProductRequest true "Тело запроса, содержащее параметры продукта"
+// @Success 201 {object} CreateProductResponse "Успешный ответ"
+// @Failure 400 {object} CreateProductResponse "Неверный запрос"
+// @Failure 500 {object} CreateProductResponse "Внутренняя ошибка сервера"
+// @Router /product [post]
 func (s *Server) CreateProduct(c *gin.Context) {
 	var request CreateProductRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

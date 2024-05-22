@@ -35,22 +35,23 @@ func (s *Server) initRoutes() {
 	auth := s.router.Group("/auth")
 	{
 		auth.POST("/check-user", s.CheckUser)
-		auth.POST("/check-password", s.CheckPassword)  //TODO Докрутить swagger
-		auth.POST("/check-code", s.CheckCode)          //TODO Докрутить swagger
-		auth.POST("/send-code-again", s.SendCodeAgain) //TODO Докрутить swagger
-		auth.POST("/fill-profile", s.FillProfile)      //TODO Докрутить swagger
+		auth.POST("/check-password", s.CheckPassword)
+		auth.POST("/check-code", s.CheckCode)
+		auth.POST("/send-code-again", s.SendCodeAgain)
+		auth.POST("/fill-profile", s.FillProfile)
 	}
 
 	category := s.router.Group("/category")
 	{
-		category.POST("", s.CreateCategory) //TODO Swagger
-		category.GET("", s.GetCategories)   //TODO Swagger
+		category.POST("", s.CreateCategory)
+		category.GET("", s.GetCategories)
 	}
 
 	product := s.router.Group("/product")
 	{
-		product.POST("", s.CreateProduct)   //TODO ДОКРУТИТЬ swagger
-		product.GET("", s.GetProducts)      //TODO ДОКРУТИТЬ swagger
+		product.POST("", s.CreateProduct)
+		product.GET("/by-id", s.GetProductsById)
+		product.GET("", s.GetProducts)
 		product.PUT("", s.UpdateProduct)    //TODO ДОКРУТИТЬ
 		product.DELETE("", s.DeleteProduct) //TODO ДОКРУТИТЬ
 	}

@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/check-password": {
+            "post": {
+                "description": "Проверяет пароль у пользователя с указанным email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка пароля пользователя",
+                "parameters": [
+                    {
+                        "description": "Запрос на проверку пользователя",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckPasswordResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckPasswordResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckPasswordResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/check-user": {
             "post": {
                 "description": "Проверяет существование пользователя и в случае его отсутсвия, отправляет код на email",
@@ -48,9 +94,348 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/category": {
+            "get": {
+                "description": "Возвращает список всех категорий.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Получение списка категорий",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ с списком категорий",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetCategoriesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создает новую категорию с указанным именем.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Создание категории",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее имя категории",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCategoryResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateCategoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/check-code": {
+            "post": {
+                "description": "Проверяет, является ли предоставленный код подтверждения верным для указанного email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка кода подтверждения",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее email и код",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Результат проверки",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос или email",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/fill-profile": {
+            "post": {
+                "description": "Заполняет профиль пользователя данными из запроса.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Заполнение профиля пользователя",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее данные пользователя",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ с токеном",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product": {
+            "get": {
+                "description": "Возвращает список всех продуктов, сгруппированных по категориям.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Получение списка продуктов по категориям",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ с списком продуктов по категориям",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetProductsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetProductsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создает новый продукт с указанными параметрами.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Создание нового продукта",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее параметры продукта",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateProductResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateProductResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/send-code-again": {
+            "post": {
+                "description": "Отправляет код подтверждения повторно на указанный email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Отправка кода подтверждения повторно",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее email",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controllers.Category": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ShortProduct"
+                    }
+                }
+            }
+        },
+        "controllers.CheckCodeRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.CheckCodeResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "isCorrect": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "controllers.CheckPasswordRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.CheckPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "controllers.CheckUserRequest": {
             "type": "object",
             "properties": {
@@ -67,6 +452,183 @@ const docTemplate = `{
                 },
                 "isRegistered": {
                     "type": "boolean"
+                }
+            }
+        },
+        "controllers.CreateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.CreateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "controllers.CreateProductRequest": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "integer"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "shelfLife": {
+                    "type": "string"
+                },
+                "storageConditions": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            }
+        },
+        "controllers.CreateProductResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "controllers.FillProfileRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.FillProfileResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.GetCategoriesResponse": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Category"
+                    }
+                }
+            }
+        },
+        "controllers.GetProductsResponse": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controllers.Category"
+                    }
+                },
+                "errorMessage": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.SendCodeAgainRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.SendCodeAgainResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ShortProduct": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oldPrice": {
+                    "type": "number"
+                },
+                "price": {
+                    "type": "number"
                 }
             }
         }

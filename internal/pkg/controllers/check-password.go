@@ -16,6 +16,17 @@ type CheckPasswordResponse struct {
 	Token        string `json:"token,omitempty"`
 }
 
+// CheckPassword godoc
+// @Summary Проверка пароля пользователя
+// @Description Проверяет пароль у пользователя с указанным email
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body CheckPasswordRequest true "Запрос на проверку пользователя"
+// @Success 200 {object} CheckPasswordResponse
+// @Failure 400 {object} CheckPasswordResponse "Неверный запрос"
+// @Failure 500 {object} CheckPasswordResponse "Ошибка сервера"
+// @Router /auth/check-password [post]
 func (s *Server) CheckPassword(c *gin.Context) {
 	var request CheckPasswordRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

@@ -18,6 +18,14 @@ type GetProductsResponse struct {
 	ErrorMessage string     `json:"errorMessage,omitempty"`
 }
 
+// GetProducts godoc
+// @Summary Получение списка продуктов по категориям
+// @Description Возвращает список всех продуктов, сгруппированных по категориям.
+// @Tags Product
+// @Produce json
+// @Success 200 {object} GetProductsResponse "Успешный ответ с списком продуктов по категориям"
+// @Failure 500 {object} GetProductsResponse "Внутренняя ошибка сервера"
+// @Router /product [get]
 func (s *Server) GetProducts(c *gin.Context) {
 	categories, err := s.storage.GetCategories()
 	if err != nil {
