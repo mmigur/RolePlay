@@ -63,6 +63,13 @@ definitions:
       success:
         type: boolean
     type: object
+  controllers.CreateOrderResponse:
+    properties:
+      errorMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
   controllers.CreateProductRequest:
     properties:
       brand:
@@ -162,6 +169,23 @@ definitions:
           $ref: '#/definitions/controllers.Category'
         type: array
       errorMessage:
+        type: string
+    type: object
+  controllers.GetProfileInfoResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      errorMessage:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      username:
         type: string
     type: object
   controllers.SendCodeAgainRequest:
@@ -362,6 +386,42 @@ paths:
       summary: Заполнение профиля пользователя
       tags:
       - Auth
+  /orders:
+    post:
+      consumes:
+      - application/json
+      description: Метод для создания заказа пользователя
+      parameters:
+      - description: Идентификаторы и количество товаров в заказе
+        in: body
+        name: productsIds
+        required: true
+        schema:
+          additionalProperties:
+            type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.CreateOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.CreateOrderResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.CreateOrderResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.CreateOrderResponse'
+      summary: Создать заказ
+      tags:
+      - Orders
   /product:
     get:
       description: Возвращает список всех продуктов, сгруппированных по категориям.
@@ -437,6 +497,35 @@ paths:
       summary: Получить информацию о продукте по идентификатору
       tags:
       - Product
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Метод для получения информации о профиле пользователя
+      parameters:
+      - description: Идентификатор пользователя
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetProfileInfoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.GetProfileInfoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.GetProfileInfoResponse'
+      summary: Получить информацию о профиле
+      tags:
+      - Profile
   /send-code-again:
     post:
       consumes:

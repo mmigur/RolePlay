@@ -58,12 +58,17 @@ func (s *Server) initRoutes() {
 
 	profile := s.router.Group("/profile")
 	{
-		profile.GET("/", s.GetProfileInfo) //TODO ДОКРУТИТЬ swagger
-		profile.PUT("/", s.EditProfile)    //TODO ДОКРУТИТЬ swagger
-		profile.DELETE("/", s.DeleteUser)  //TODO ДОКРУТИТЬ swagger
+		profile.GET("", s.GetProfileInfo)
+		profile.PUT("", s.EditProfile)   //TODO ДОКРУТИТЬ swagger
+		profile.DELETE("", s.DeleteUser) //TODO ДОКРУТИТЬ swagger
+	}
+	orders := s.router.Group("/orders")
+	{
+		orders.GET("", s.GetOrders)
+		orders.POST("", s.CreateOrder)
 	}
 
-	s.router.Static("/media", "./media") // ✔
+	s.router.Static("/media", "./media")
 
 }
 

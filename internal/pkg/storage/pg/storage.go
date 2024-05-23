@@ -260,3 +260,42 @@ func (s *Storage) GetProductById(productId uint) (models.Product, error) {
 
 	return foundProduct, nil
 }
+
+func (s *Storage) GetProfileInfo(userId uint) (models.User, error) {
+	var foundUser models.User
+	err := s.db.Where("id = ?", userId).First(&foundUser).Error
+	if err != nil {
+		return models.User{}, err
+	}
+	return foundUser, nil
+}
+
+func (s *Storage) CreateOrder(productsIds map[uint]int, userId uint) error {
+	var newOrder models.Order
+	newOrder.UserId = userId
+	newOrder.CreatedAt = time.Now()
+	err := s.db.Create(&newOrder).Error
+	if err != nil {
+		return err
+	}
+	for productId, productCount := range productsIds {
+		var OrderDetail models.OrderDetail
+		OrderDetail.OrderID = newOrder.ID
+		for i := 0; i < len(productsIds); i++ {
+			var foundProduct models.Product
+			err := s.db.Where("id = ?", productId).First(&foundProduct).Error
+			if err != nil {
+				return err
+			}
+			newOrder.TotalPrice += foundProduct.Price * float32(productCount)
+			for j := 0; j < productCount; j++ {
+				err = s.db.Create(&OrderDetail).Error
+				if err != nil {
+					return err
+				}
+			}
+		}
+		err = s.db.Save(&newOrder).Error
+	}
+	return nil
+}
