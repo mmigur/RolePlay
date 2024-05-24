@@ -12,7 +12,6 @@ type FillProfileRequest struct {
 	MiddleName string `json:"middleName"`
 	LastName   string `json:"lastName"`
 	Address    string `json:"address"`
-	Username   string `json:"username"`
 	Password   string `json:"password"`
 }
 
@@ -32,7 +31,7 @@ type FillProfileResponse struct {
 // @Success 200 {object} FillProfileResponse "Успешный ответ с токеном"
 // @Failure 400 {object} FillProfileResponse "Неверный запрос"
 // @Failure 500 {object} FillProfileResponse "Внутренняя ошибка сервера"
-// @Router /fill-profile [post]
+// @Router /auth/fill-profile [post]
 func (s *Server) FillProfile(c *gin.Context) {
 	var request FillProfileRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -46,7 +45,6 @@ func (s *Server) FillProfile(c *gin.Context) {
 	user.MiddleName = request.MiddleName
 	user.LastName = request.LastName
 	user.Address = request.Address
-	user.Username = request.Username
 	user.Password = request.Password
 	token, err := s.storage.FillProfile(user, *s.cfg)
 	if err != nil {

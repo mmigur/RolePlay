@@ -3,8 +3,7 @@ package models
 import "time"
 
 type User struct {
-	ID         uint `gorm:"primaryKey"`
-	Username   string
+	ID         uint   `gorm:"primaryKey"`
 	Email      string `gorm:"unique;not null"`
 	Password   string
 	FirstName  string

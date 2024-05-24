@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/check-code": {
+            "post": {
+                "description": "Проверяет, является ли предоставленный код подтверждения верным для указанного email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Проверка кода подтверждения",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее email и код",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Результат проверки",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос или email",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CheckCodeResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/check-password": {
             "post": {
                 "description": "Проверяет пароль у пользователя с указанным email",
@@ -95,6 +141,98 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/fill-profile": {
+            "post": {
+                "description": "Заполняет профиль пользователя данными из запроса.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Заполнение профиля пользователя",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее данные пользователя",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ с токеном",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.FillProfileResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/send-code-again": {
+            "post": {
+                "description": "Отправляет код подтверждения повторно на указанный email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Отправка кода подтверждения повторно",
+                "parameters": [
+                    {
+                        "description": "Тело запроса, содержащее email",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/category": {
             "get": {
                 "description": "Возвращает список всех категорий.",
@@ -165,99 +303,37 @@ const docTemplate = `{
                 }
             }
         },
-        "/check-code": {
-            "post": {
-                "description": "Проверяет, является ли предоставленный код подтверждения верным для указанного email.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Проверка кода подтверждения",
-                "parameters": [
-                    {
-                        "description": "Тело запроса, содержащее email и код",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckCodeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Результат проверки",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckCodeResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос или email",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckCodeResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CheckCodeResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/fill-profile": {
-            "post": {
-                "description": "Заполняет профиль пользователя данными из запроса.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Заполнение профиля пользователя",
-                "parameters": [
-                    {
-                        "description": "Тело запроса, содержащее данные пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.FillProfileRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ с токеном",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.FillProfileResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.FillProfileResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.FillProfileResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/orders": {
+            "get": {
+                "description": "Получить список заказов для аутентифицированного пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Получить заказы пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetOrdersResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetOrdersResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GetOrdersResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Метод для создания заказа пользователя",
                 "consumes": [
@@ -465,52 +541,6 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/controllers.GetProfileInfoResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/send-code-again": {
-            "post": {
-                "description": "Отправляет код подтверждения повторно на указанный email.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Отправка кода подтверждения повторно",
-                "parameters": [
-                    {
-                        "description": "Тело запроса, содержащее email",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SendCodeAgainRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный ответ",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SendCodeAgainResponse"
                         }
                     }
                 }
@@ -725,6 +755,20 @@ const docTemplate = `{
                 }
             }
         },
+        "controllers.GetOrdersResponse": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controllers.OrderRecord"
+                    }
+                }
+            }
+        },
         "controllers.GetProductByIdResponse": {
             "type": "object",
             "properties": {
@@ -806,6 +850,43 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "controllers.OrderRecord": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "orderId": {
+                    "type": "integer"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controllers.ProductRecord"
+                    }
+                },
+                "totalPrice": {
+                    "type": "number"
+                }
+            }
+        },
+        "controllers.ProductRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "productCount": {
+                    "type": "integer"
+                },
+                "productId": {
+                    "type": "integer"
                 }
             }
         },

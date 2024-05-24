@@ -1,6 +1,10 @@
 FROM registry.hub.docker.com/library/golang:latest
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y \
+    curl \
+    iputils-ping \
+    telnet \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

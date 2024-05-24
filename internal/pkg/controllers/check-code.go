@@ -26,7 +26,7 @@ type CheckCodeResponse struct {
 // @Success 200 {object} CheckCodeResponse "Результат проверки"
 // @Failure 400 {object} CheckCodeResponse "Неверный запрос или email"
 // @Failure 500 {object} CheckCodeResponse "Внутренняя ошибка сервера"
-// @Router /check-code [post]
+// @Router /auth/check-code [post]
 func (s *Server) CheckCode(c *gin.Context) {
 	var request CheckCodeRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

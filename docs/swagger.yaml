@@ -133,6 +133,15 @@ definitions:
           $ref: '#/definitions/models.Category'
         type: array
     type: object
+  controllers.GetOrdersResponse:
+    properties:
+      errorMessage:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/controllers.OrderRecord'
+        type: array
+    type: object
   controllers.GetProductByIdResponse:
     properties:
       brand:
@@ -188,6 +197,30 @@ definitions:
       username:
         type: string
     type: object
+  controllers.OrderRecord:
+    properties:
+      date:
+        type: string
+      orderId:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/controllers.ProductRecord'
+        type: array
+      totalPrice:
+        type: number
+    type: object
+  controllers.ProductRecord:
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      productCount:
+        type: integer
+      productId:
+        type: integer
+    type: object
   controllers.SendCodeAgainRequest:
     properties:
       email:
@@ -226,6 +259,37 @@ info:
   title: 52FOOD API
   version: "1.0"
 paths:
+  /auth/check-code:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет, является ли предоставленный код подтверждения верным
+        для указанного email.
+      parameters:
+      - description: Тело запроса, содержащее email и код
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CheckCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Результат проверки
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "400":
+          description: Неверный запрос или email
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.CheckCodeResponse'
+      summary: Проверка кода подтверждения
+      tags:
+      - Auth
   /auth/check-password:
     post:
       consumes:
@@ -279,6 +343,66 @@ paths:
       summary: Проверка на зарегистрирован ли пользователь
       tags:
       - Auth
+  /auth/fill-profile:
+    post:
+      consumes:
+      - application/json
+      description: Заполняет профиль пользователя данными из запроса.
+      parameters:
+      - description: Тело запроса, содержащее данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.FillProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с токеном
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.FillProfileResponse'
+      summary: Заполнение профиля пользователя
+      tags:
+      - Auth
+  /auth/send-code-again:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код подтверждения повторно на указанный email.
+      parameters:
+      - description: Тело запроса, содержащее email
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SendCodeAgainRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/controllers.SendCodeAgainResponse'
+      summary: Отправка кода подтверждения повторно
+      tags:
+      - Auth
   /category:
     get:
       description: Возвращает список всех категорий.
@@ -325,68 +449,27 @@ paths:
       summary: Создание категории
       tags:
       - Category
-  /check-code:
-    post:
-      consumes:
-      - application/json
-      description: Проверяет, является ли предоставленный код подтверждения верным
-        для указанного email.
-      parameters:
-      - description: Тело запроса, содержащее email и код
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CheckCodeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Результат проверки
-          schema:
-            $ref: '#/definitions/controllers.CheckCodeResponse'
-        "400":
-          description: Неверный запрос или email
-          schema:
-            $ref: '#/definitions/controllers.CheckCodeResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/controllers.CheckCodeResponse'
-      summary: Проверка кода подтверждения
-      tags:
-      - Auth
-  /fill-profile:
-    post:
-      consumes:
-      - application/json
-      description: Заполняет профиль пользователя данными из запроса.
-      parameters:
-      - description: Тело запроса, содержащее данные пользователя
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.FillProfileRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Успешный ответ с токеном
-          schema:
-            $ref: '#/definitions/controllers.FillProfileResponse'
-        "400":
-          description: Неверный запрос
-          schema:
-            $ref: '#/definitions/controllers.FillProfileResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/controllers.FillProfileResponse'
-      summary: Заполнение профиля пользователя
-      tags:
-      - Auth
   /orders:
+    get:
+      description: Получить список заказов для аутентифицированного пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetOrdersResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.GetOrdersResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.GetOrdersResponse'
+      summary: Получить заказы пользователя
+      tags:
+      - Orders
     post:
       consumes:
       - application/json
@@ -526,34 +609,4 @@ paths:
       summary: Получить информацию о профиле
       tags:
       - Profile
-  /send-code-again:
-    post:
-      consumes:
-      - application/json
-      description: Отправляет код подтверждения повторно на указанный email.
-      parameters:
-      - description: Тело запроса, содержащее email
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.SendCodeAgainRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Успешный ответ
-          schema:
-            $ref: '#/definitions/controllers.SendCodeAgainResponse'
-        "400":
-          description: Неверный запрос
-          schema:
-            $ref: '#/definitions/controllers.SendCodeAgainResponse'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/controllers.SendCodeAgainResponse'
-      summary: Отправка кода подтверждения повторно
-      tags:
-      - Auth
 swagger: "2.0"

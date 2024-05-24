@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -106,27 +107,27 @@ func (s *Storage) CheckUser(email string, cfg config.Config) (bool, error) {
 				s.db.Delete(&codeForEmail)
 				return false, err
 			}
-			//err = services.SendCodeToEmailService(cfg, code, email)
-			//if err != nil {
-			//	return false, err
-			//}
+			err = services.SendCodeToEmailService(cfg, code, email)
+			if err != nil {
+				return false, err
+			}
 
 			return false, nil
 		}
 		return false, err
 	}
-	code := services.GenerateRandomCode()
-
-	codeForEmail := models.CodeForEmail{
-		Email:     email,
-		Code:      code,
-		CreatedAt: time.Now().Format(time.RFC3339),
-	}
-	err = services.SendCodeToEmailService(cfg, code, email)
-	if err != nil {
-		return false, err
-	}
-	err = s.db.Create(&codeForEmail).Error
+	//code := services.GenerateRandomCode()
+	//
+	//codeForEmail := models.CodeForEmail{
+	//	Email:     email,
+	//	Code:      code,
+	//	CreatedAt: time.Now().Format(time.RFC3339),
+	//}
+	//err = services.SendCodeToEmailService(cfg, code, email)
+	//if err != nil {
+	//	return false, err
+	//}
+	//err = s.db.Create(&codeForEmail).Error
 	return true, nil
 }
 
@@ -185,10 +186,10 @@ func (s *Storage) SendCodeAgain(email string, cfg config.Config) error {
 	}
 	var newCode models.CodeForEmail
 	code := services.GenerateRandomCode()
-	//err = services.SendCodeToEmailService(cfg, code, email)
-	//if err != nil {
-	//	return err
-	//}
+	err = services.SendCodeToEmailService(cfg, code, email)
+	if err != nil {
+		return err
+	}
 	newCode.Email = email
 	newCode.Code = code
 	newCode.CreatedAt = time.Now().Format(time.RFC3339)
@@ -271,31 +272,56 @@ func (s *Storage) GetProfileInfo(userId uint) (models.User, error) {
 }
 
 func (s *Storage) CreateOrder(productsIds map[uint]int, userId uint) error {
-	var newOrder models.Order
-	newOrder.UserId = userId
-	newOrder.CreatedAt = time.Now()
-	err := s.db.Create(&newOrder).Error
-	if err != nil {
+	// Проверка наличия всех продуктов
+	for productId := range productsIds {
+		var product models.Product
+		if err := s.db.Where("id = ?", productId).First(&product).Error; err != nil {
+			return errors.New("product ID " + strconv.Itoa(int(productId)) + " does not exist")
+		}
+	}
+
+	newOrder := models.Order{
+		UserId: userId,
+	}
+
+	if err := s.db.Create(&newOrder).Error; err != nil {
 		return err
 	}
+
+	var totalPrice float32
 	for productId, productCount := range productsIds {
-		var OrderDetail models.OrderDetail
-		OrderDetail.OrderID = newOrder.ID
-		for i := 0; i < len(productsIds); i++ {
-			var foundProduct models.Product
-			err := s.db.Where("id = ?", productId).First(&foundProduct).Error
-			if err != nil {
-				return err
-			}
-			newOrder.TotalPrice += foundProduct.Price * float32(productCount)
-			for j := 0; j < productCount; j++ {
-				err = s.db.Create(&OrderDetail).Error
-				if err != nil {
-					return err
-				}
-			}
+		var product models.Product
+		if err := s.db.Where("id = ?", productId).First(&product).Error; err != nil {
+			return err
 		}
-		err = s.db.Save(&newOrder).Error
+
+		orderDetail := models.OrderDetail{
+			OrderID:      newOrder.ID,
+			ProductID:    productId,
+			ProductCount: productCount,
+		}
+
+		if err := s.db.Create(&orderDetail).Error; err != nil {
+			return err
+		}
+
+		totalPrice += product.Price * float32(productCount)
 	}
+
+	// Обновление общей стоимости заказа
+	newOrder.TotalPrice = totalPrice
+	if err := s.db.Save(&newOrder).Error; err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (s *Storage) GetOrders(userId uint) ([]models.Order, error) {
+	var orders []models.Order
+	err := s.db.Where("user_id = ?", userId).Preload("OrderDetails.Product").Find(&orders).Error
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
 }

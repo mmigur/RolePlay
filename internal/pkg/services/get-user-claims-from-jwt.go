@@ -2,28 +2,33 @@ package services
 
 import (
 	"RolePlayModule/internal/utils/config"
-	"context"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"strings"
 )
 
-func GetUserClaimsFromJWT(ctx context.Context, cfg config.Config) (*UserClaims, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
-	}
-	authHeader, ok := md["authorization"]
-	if !ok {
-		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+func GetUserClaimsFromJWT(c *gin.Context, cfg config.Config) (*UserClaims, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return nil, &gin.Error{
+			Err:  http.ErrNoCookie,
+			Type: gin.ErrorTypePublic,
+		}
 	}
 
-	token := strings.TrimPrefix(authHeader[0], "Bearer ")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-	claims, err := DecodeJWT(token, cfg)
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(cfg.SecretKey), nil
+	})
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "decode token err: %v", err)
+		return nil, err
 	}
-	return claims, nil
+
+	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, err
+	}
 }

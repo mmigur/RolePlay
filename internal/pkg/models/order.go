@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Order struct {
 	gorm.Model
-	UserId     uint
-	Products   []Product `gorm:"many2many:order_products;"`
-	TotalPrice float32
+	UserId       uint
+	TotalPrice   float32
+	OrderDetails []OrderDetail `gorm:"foreignKey:OrderID"`
 }

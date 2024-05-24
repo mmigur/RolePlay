@@ -6,17 +6,17 @@ import (
 )
 
 type UserClaims struct {
-	UserId   uint   `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"nickname"`
+	UserId    uint   `json:"id"`
+	Email     string `json:"email"`
+	Firstname string `json:"nickname"`
 	jwt.StandardClaims
 }
 
 func GenerateUserToken(secret []byte, user models.User) (string, error) {
 	claims := UserClaims{
-		UserId:   user.ID,
-		Email:    user.Email,
-		Username: user.Username,
+		UserId:    user.ID,
+		Email:     user.Email,
+		Firstname: user.FirstName,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
