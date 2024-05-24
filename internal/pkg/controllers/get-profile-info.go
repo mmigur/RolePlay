@@ -10,13 +10,12 @@ type GetProfileInfoRequest struct {
 	Id int `form:"id"`
 }
 type GetProfileInfoResponse struct {
-	ErrorMessage string `form:"errorMessage,omitempty"`
-	Username     string `form:"username"`
-	Email        string `form:"email"`
-	FirstName    string `form:"firstName"`
-	MiddleName   string `form:"middleName"`
-	LastName     string `form:"lastName"`
-	Address      string `form:"address"`
+	ErrorMessage string `json:"errorMessage,omitempty"`
+	Email        string `json:"email"`
+	FirstName    string `json:"firstName"`
+	MiddleName   string `json:"middleName"`
+	LastName     string `json:"lastName"`
+	Address      string `json:"address"`
 }
 
 // GetProfileInfo godoc
@@ -43,7 +42,6 @@ func (s *Server) GetProfileInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, GetProfileInfoResponse{
-		Username:   user.Username,
 		Email:      user.Email,
 		FirstName:  user.FirstName,
 		MiddleName: user.MiddleName,

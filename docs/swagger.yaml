@@ -114,8 +114,6 @@ definitions:
         type: string
       password:
         type: string
-      username:
-        type: string
     type: object
   controllers.FillProfileResponse:
     properties:
@@ -193,8 +191,6 @@ definitions:
       lastName:
         type: string
       middleName:
-        type: string
-      username:
         type: string
     type: object
   controllers.OrderRecord:

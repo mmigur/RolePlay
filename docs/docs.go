@@ -724,9 +724,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -846,9 +843,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "middleName": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }

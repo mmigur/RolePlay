@@ -717,9 +717,6 @@
                 },
                 "password": {
                     "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -839,9 +836,6 @@
                     "type": "string"
                 },
                 "middleName": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }

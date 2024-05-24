@@ -161,7 +161,6 @@ func (s *Storage) FillProfile(user models.User, cfg config.Config) (string, erro
 	foundUser.MiddleName = user.MiddleName
 	foundUser.LastName = user.LastName
 	foundUser.Address = user.Address
-	foundUser.Username = user.Username
 	foundUser.Password = user.Password
 	err = s.db.Save(&foundUser).Error
 	if err != nil {
